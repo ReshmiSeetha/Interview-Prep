@@ -91,7 +91,7 @@ A process is an independent program with its own memory space, while a thread is
 * Best way is to use Runnable Interface(@FunctionalInterface) using lambda expression
 	Runnable has only one single abstract method which is run(); so whatever implementation we give in lambda expression it automatically implementing run method
 
-* Daemon thread concept in java -> set obj.setDeamon(true); before starting a thread(obj.start())
+* Daemon thread concept in java -> set obj.setDaemon(true); before starting a thread(obj.start())
 	Background thread whose life cycle depends on other threads keep doing the same task continuously till all other threads completed their execution. It's an importance concept which ensure that all critical tasks keeps executed in the background along the main threads
 
 	Example :- Java garbage collector is a daemon thread it will keep running by clearing the space continuously of unused objs once the main program finishes it will stop automatically.
@@ -230,7 +230,7 @@ Original :- code a=b+c		Reordered:- a=b+c
 *Virtual Threads
 	 These are lightweight threads managed by the JVM , introduced in project loom(preview in java 19 , stable in java 21).
 	They allow u to create millions of threads without heavy resource usage.
-	By default all virtual threads are deamon
+	By default all virtual threads are daemon
 	Problem with old platform threads:
 		uses OS resources
 		Expensive (memory +context switching)
