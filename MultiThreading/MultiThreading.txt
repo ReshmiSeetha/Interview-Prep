@@ -1,0 +1,257 @@
+Multithreading
+
+Youtube link - https://www.youtube.com/watch?v=F2nuvXJHYxQ&t=2163s
+
+ * A process is an independent program in execution with its own memory space (Browser)
+	
+	Process A → Own memory
+	Process B → Own memory
+
+ * A thread is a lightweight unit of execution inside a process (Tabs)
+	Process → Shared Memory
+   	├── Thread 1
+   	├── Thread 2
+   	└── Thread 3
+// Process → JVM instance
+// Threads → main thread, GC thread, worker threads
+
+A process is an independent program with its own memory space, while a thread is a lightweight unit of execution within a process that shares memory with other threads. Processes are heavier and isolated, whereas threads are faster but require synchronization due to shared memory
+	
+ * Single Task
+	
+	CPU can handle only one task at a time in old machines
+	Nothing was in parallel once one task is completed it goes
+	the next one.
+
+ * Multitasking
+
+	In later period CPU will do one task at a time but it will switch 	
+	between programs. few time will be given to 1st task and will switch 	
+	to other task and come back
+
+ * Multi Threading
+	
+	$ CPU will handle 1 thread but inside the application we can create multiple thread 
+	$ CPU will run the application if inside the application if there are 2 threads 1st it will run thread1 then thread2 or switching similar to multitasking
+
+-------------------------------------------------------------------
+
+* But now Modern Computers we can many CPU's 
+	One thread by CPU1 another thread by CPU2 - this where the parallel execution happens. No switching and delay.
+
+* Problems
+	$ If both threads are managed by same memory like shared memory model this leads to Deadlock, Race Conditions, Congestions
+
+* Life Cycle
+******************************************
+	NEW → RUNNABLE → RUNNING
+        	↓
+   BLOCKED / WAITING / TIMED_WAITING
+        	↓
+     	    RUNNABLE
+        	↓
+            TERMINATED
+******************************************
+	Create → start() → run()
+          	 ↓
+     waiting / blocked
+           	↓
+             finish
+******************************************
+
+	A thread in Java goes through multiple states: New, Runnable, Blocked, Waiting, Timed Waiting, and Terminated. After creation, a thread moves to Runnable when start() is called. 
+	It may enter waiting or blocked states based on synchronization or delays, and finally moves to terminated after execution completes.
+	Java combines ready and running states into RUNNABLE, unlike some OS-level models.
+	
+
+
+* Creation -> to create a thread 1st create a Thread Objects 
+	Thread obj = new Thread ();
+	
+	$ Ways to create threads in java
+		% Extending Thread class (Simple , cannot extend other class bcz multiple inheritance is not supported)
+		% Implementing Runnable interface(Can extend other class, Better design separate task from other class)
+		% using lambda expression(clean and concise, Performed in modern java)
+		% using ExecutorService [single,fixed,cached,sceduled] (Thread Pooling, scalable,production ready)
+		% using virtualThread[java 21+] (Lightweight, scalable )
+
+	Threads in Java can be created by extending the Thread class or implementing Runnable. 
+	In modern applications, we prefer using ExecutorService for thread pooling and better resource management. 
+	With Java 21, virtual threads are also introduced, allowing lightweight and scalable concurrency.
+	Runnable with ExecutorService is preferred in production because it provides better scalability and thread management
+
+* To start -> obj.start(); it will just start thread no action is performed until the run method is implemented using Inheritance.
+
+* Old Method -> Extends Thread class and create obj in main method and call start method.
+
+*thread.start () -> creates a new thread in JVM and that created thread internally invokes runnable.run() method .
+
+* Java 8+ -> use Functional Interface(has single abstract method) 
+
+* Best way is to use Runnable Interface(@FunctionalInterface) using lambda expression
+	Runnable has only one single abstract method which is run(); so whatever implementation we give in lambda expression it automatically implementing run method
+
+* Daemon thread concept in java -> set obj.setDeamon(true); before starting a thread(obj.start())
+	Background thread whose life cycle depends on other threads keep doing the same task continuously till all other threads completed their execution. It's an importance concept which ensure that all critical tasks keeps executed in the background along the main threads
+
+	Example :- Java garbage collector is a daemon thread it will keep running by clearing the space continuously of unused objs once the main program finishes it will stop automatically.
+
+*JMM - Java Memory Model
+	$ Inside JVM we have HEAP Memory objects will be always stored here
+	$ For each thread we have each thread stack 
+		% Local variables are stored in thread stack these variables are not shared to other threads limited to their own threads
+	$ So the reference of objects stored in Thread stacks , we will have ref1 in thread1 and ref2 in thread2 will point to same Object in Heap memory. In this case both reference will have shared object. This may leads to problem
+
+	$ we have 2 sections RAM (Main Memory) and CPU's . JVM will be inside RAM	
+
+	$ Each CPU will have their own registers and caching layer as well
+
+	$ Data Flow Thread1 in CPU1-> Since JVM and threads are in Main Memory it starts from --> RAM -> Caching -> Registers . Once processing is done , Registers -> Caching -> RAM.(Same for thread 2 in CPU2).
+
+*Visibility Problem
+	When both thread1 and thread2 have a shared object and this visibility problem occurs when one thread thread1 is updating a variable and it's not yet stored in RAM yet and at the same time thread2 trying to get the value for that variable and it will get the old value not the new one. 
+
+* Volatile Keyword
+	Visibility Problem is resolved using Volatile Keyword. Used in variable
+
+* Synchronized Keyword
+	$ Visibility Problem is resolved using Volatile Keyword. Used in methods(getters/setters) as keyword 
+
+	$ Can be used inside methods like 
+	//Synchronize only that piece of code
+	synchronized(this){
+	 count ++;//Logic
+
+	}
+
+	$ Inside static method
+	public static void increment(){
+	synchronized(Classname.class){
+		//Logic;
+		}
+	}
+
+* How Visibility is handled in JMM
+	$ In the example thread1 running on CPU1 will fetch Boolean value and it will process the value in Register and sync the value in caching which means the updated value is in caching but taking time to sync it with Main memory(RAM) . At CPU2 thread2 is running it checks the value in the RAM , it also check in it's caching area. With volatile or synchronized keyword what it tells the thread1 is to update the Boolean value to RAM and it tells the thread2 to check the value directly in RAM and not in your caching area. As soon as the value is updated it will get passed to the main memory and thread2 immediately read the value from main memory.
+
+* Race Condition
+	When 2 threads 1 and 2 both are trying to do any operation on shared object inconsistency of data can happen on this place. When multiple threads modify shared data concurrently without proper synchronization.
+
+* Race Condition in JMM
+	$ In the example there is an integer variable which both thread will try to increment it . When we say increment i++ in backend there are 3 operations happening , fetch the value , add the value and final is assign it back to i. First when the thread1 fetched the value from RAM(Main thread) it's 0 stored in caching then the logic i++ happens in the Register. Now thread2 also started it fetched the value as 0 stored in it's caching and it's register also does the same.
+	
+	$ Now the thread1 put value as 1 in RAM after some time thread also put the value as 1 in the RAM
+
+* Handling Race Condition
+	$ To handle Race Condition we can use Atomic classes(non lock based,faster) or synchronized keyword(lock based,slower)
+
+* When to use Volatile, synchronized, Atomic
+------------|------------------------------------------------------
+Feature	    |	Volatile	Synchronized		Atomic
+------------------------------------------------------------------
+Visibility  |	    Y     		Y		  Y
+Atomicity   |	    N 			Y		  Y
+Locking	    | 	    N			Y		  N
+Performance |	   Fast		      Slow		 Fast
+------------------------------------------------------------------
+
+	$ Volatile is used when we need only visibility of changes across threads. Synchronized is used when we need both visibility and atomicity, ensuring only one thread executes a block at a time. Atomic classes are used for thread-safe operations without locking, providing better performance using CAS for simple operations like increment.
+
+* Happens Before
+	What happens is, if in our code we have some set of instructions so CPU or compiler will reorder those instructions to give better performance to run that instruction in parallel. Reordering can cause issues with multiple threading bcz multiple thread will have access to same shared variables.So we use volatile/synchronized/Atomic keywords so that reordering will not happen.
+
+	Example: 
+Original :- code a=b+c		Reordered:- a=b+c
+		 d=a+z			    m=n+0
+		 m=n+o			    d=a+z
+
+*Thread Local:
+	$ Consider we have a web application and each user has a separate thread
+	$ 3 users will be hitting the web app and in the code 3 threads will be getting created and each thread is attached with their user id
+	$ using shared objects may lead to synchronization errors so we can use Thread local in this case
+	$ Threads can use ThreadLocal class to use to store their local copies of variables.
+	Example : Thread1 can store User1 in threadlocal and it can also get user1 from thread1.Thread1 is visible only to thread1 not to thread2 or thread3.It's a thread safe environment.
+	$ ThreadLocal class helps in creating variables that can be only read and written by the same thread.
+	$ These variables are unique to each thread and are not shared among different threads.
+	$ Handy in scenarios where we need to maintain per thread context or state, such as application handling user sessions or DB connections
+	$ Improve performance by avoiding synchronization overhead in multithreaded environments.
+	$ Each thread holds it's own copy of the variable,it's easy to accidentally retain references longer than necessary, leading to memory leaks.
+
+* Inheritable Thread Local:
+	In some case we use parent and child thread inthat case we use InheritableThreadLocal
+	Inheritable thread value can be accessed by child thread
+	If I set value to just threadlocal it will not be accessed by child
+
+* Java Executor Service:
+	High Level concurrency utility that provdes way to manage and execute tasks asynchronously(happening at different times, not simultaneously, or without waiting for a previous action to finish) in a pool of threads. Executor Service abstracts away the complexity of thread management.
+	$ Single Thread Executor:
+		% This Executor Service maintains a single thread for executing tasks sequentially. it's useful for tasks that need to be executed in a specific order or when u want to secure thread safety.
+		% Whenever we want to do task sequentially and we only need one thread in the thread pool 
+	
+	$ Fixed Thread Pool:
+		% Maintains a fixed number of thread in its pool. Once a task is submitted, its executed by one of the available threads.
+		% If all threads are busy, the task is queued util a thread becomes available.
+		% Number of threads should be given in the parameter
+		% If only 3 threads are fixed and there are 5 tasks available , the 1st 3 tasks will go immediately to 3 threads and the next 2 will wait for until any of the thread is available.
+		% The fixed threads will not be terminated.
+		% Executor Service has 2 sections inside it Blocking Queue and Thread Pool where thread pool will have the threads and once the tasks started any of the 3 threads will be assigned to threads inside the thread pool remaining 2 will be residing in blocking queue. Once the thread execution is completed thread pool will pick next task from blocking queue.
+
+	$ Cached Thread Pool:
+		% We don't give the number of threads to the method we can ask the method to control and adjust the thread pool based on the workload.
+		% Dynamically adjust the no of threads based on the workload.
+		% If new task is submitted and no threads are available a new thread is created. Conversely, if a thread remains idle for a certain period, it's terminated and removed from pool.
+		% It creates number of threads as needed and terminates it if not required.
+
+	$ Scheduled Thread Pool :
+		% If we want to use execute task  based on some time interval. we can use this pool.
+		% We use this whenever we want a delay or scheduled to execute after delay
+
+* Thread Pool Executor class:
+	Used with ExecutorService interface it has 5 parameters
+		%core pool size - number of threads to keep in the pool 				  even if they are idle.(ex:1)
+		%maximum pool size - maximum number of threads allowed in 				    the pool.(ex:5)
+
+		%keep live time - If number of threads are greater than 				  core pool threads for how long u have to				  keep it alive.(ex:0L)
+
+		%TimeUnit
+		%Blocking Queue - Until or unless the blocking queue 			capacity is full next thread will not be started.(ex:2)
+
+
+	JMM - From our app if we trigger 5 tasks what will happen is 1st will be picked up by thread1 , 2nd and third task will be pushed to queue since it's capacity is 2 as given in the example the queue will be full. Since the maximum pool size is 5 Thread Pool will create thread 2 and thread 3 inside it. So once the task is completed thread2 and 3 will be terminated bcz our keep live time is 0. Since core size is one it will not be terminated.
+
+*Producer Consumer Problem
+	It's a classic synchronization problem in computer science , where multiple threads (producers) produce data items, and multiple threads (consumers) consume these items.
+	The problem lies in making sure that the producer won't try to add data into the buffer id it's full and that the consumer won't try to remove data from an empty buffer.
+	Consider I have a shared queue and Producer thread which produce events and puts in shared queue. Then I have a consumer thread that consume the events put in the shared queue put by the Producer thread. 
+	What if the speed of Producer thread is higher than the consume thread , what will happen is producer will put events into shared queue and consumer thread will consume the data slowly which will lead to overflow of shared queue
+	We can have some mechanism where we can say to the Produce the thread to stop producing sometime bcz the shared queue is full bcz consumer is still in progress and the revere case can also happen where consumer is fast and producer is slow.
+	This Problem can be solved with BLOCKINGQUEUE or using wait, notify and notifyAll() methods or Semaphores
+
+*Virtual Threads
+	 These are lightweight threads managed by the JVM , introduced in project loom(preview in java 19 , stable in java 21).
+	They allow u to create millions of threads without heavy resource usage.
+	By default all virtual threads are deamon
+	Problem with old platform threads:
+		uses OS resources
+		Expensive (memory +context switching)
+		Limited (few thousands max)
+	Solution : Virtual Threads
+		managed by JVM
+		very lightweight
+		Cheap to create
+	Best for I/O bound tasks(API calls, DB calls),High concurrency apps, Microservices, WebServers.
+	Use when there is so many concurrent tasks which spend much time on waiting
+	Not ideal for CPU - Heavy tasks, Tight loops
+
+Important Interview questions
+	1.Difference between a process and a thread
+	2.How to create a thread in java
+	3.Different states of a Thread
+	4.What is a daemon thread and how to create a it. Real use cases
+	5.JMM and it's purpose
+	6.Race condition and visibility problem
+	7.Difference btwn Volatile Atomic and Synchronized
+	8.Deadlock, Livelock and Starvation
+	9.ThreadLocal and it's advantages
+	10.Vitual Thread in java 21
+	11.Fork or joinFramework
