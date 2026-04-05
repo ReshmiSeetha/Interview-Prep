@@ -83,7 +83,7 @@ How to store an array of integers in memory?
     We need 3 * 4 = 12 bytes of memory to store the array.
     We can store the array in memory by assigning address to each integer.
 
-    The memory representation is given in the image below green color is the space occupied by integer a and blue color is the space occupied by the array
+The memory representation is given in the image below green color is the space occupied by integer a and blue color is the space occupied by the array
     
 ![alt text](image-1.png)
 
