@@ -33,7 +33,7 @@ Processes are heavier and isolated, whereas threads are faster but require synch
  * Multi Threading
 	
 	$ CPU will handle 1 thread but inside the application we can create multiple thread 
-	$ CPU will run the application if inside the application if there are 2 threads 1st it will run thread1 then thread2 or switching similar to multitasking
+	$ When CPU run the application if there are 2 threads in it 1st it will run thread1 then thread2 or switching similar to multitasking
 
 -------------------------------------------------------------------
 
