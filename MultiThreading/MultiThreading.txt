@@ -15,7 +15,8 @@ Youtube link - https://www.youtube.com/watch?v=F2nuvXJHYxQ&t=2163s
 // Process → JVM instance
 // Threads → main thread, GC thread, worker threads
 
-A process is an independent program with its own memory space, while a thread is a lightweight unit of execution within a process that shares memory with other threads. Processes are heavier and isolated, whereas threads are faster but require synchronization due to shared memory
+A process is an independent program with its own memory space, while a thread is a lightweight unit of execution within a process that shares memory with other threads. 
+Processes are heavier and isolated, whereas threads are faster but require synchronization due to shared memory
 	
  * Single Task
 	
