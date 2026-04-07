@@ -47,3 +47,14 @@ But Functional Interface has only one abstract method so we can use Lambda Expre
 Extra Facts:
     Every class in java extends an Object class so we can use the abstract methods of object class inside Functional Interface because anyway it's getting implemented.
 
+A **Method Reference** is a shorthand for lambda expressions that calls an existing method.
+
+Instead of writing 
+
+    x -> x.method()
+
+We can write
+
+    ClassName::methodName
+
+Method reference is a shorthand notation of lambda expressions used to refer to an existing method. It improves readability and reduces boilerplate code. It can reference static methods, instance methods, and constructors.
