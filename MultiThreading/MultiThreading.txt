@@ -150,10 +150,10 @@ Processes are heavier and isolated, whereas threads are faster but require synch
 ------------|------------------------------------------------------
 Feature	    |	Volatile	Synchronized		Atomic
 ------------------------------------------------------------------
-Visibility  |	    Y     		Y		  Y
-Atomicity   |	    N 			Y		  Y
-Locking	    | 	    N			Y		  N
-Performance |	   Fast		      Slow		 Fast
+Visibility  |	    Y     		Y		 		 Y
+Atomicity   |	    N 			Y		 		 Y
+Locking	    | 	    N			Y		 		 N
+Performance |	   Fast		   Slow		 		Fast
 ------------------------------------------------------------------
 
 	$ Volatile is used when we need only visibility of changes across threads. Synchronized is used when we need both visibility and atomicity, ensuring only one thread executes a block at a time. Atomic classes are used for thread-safe operations without locking, providing better performance using CAS for simple operations like increment.
@@ -163,15 +163,14 @@ Performance |	   Fast		      Slow		 Fast
 
 	Example: 
 Original :- code a=b+c		Reordered:- a=b+c
-		 d=a+z			    m=n+0
+		 d=a+z			    m=n+o
 		 m=n+o			    d=a+z
 
 *Thread Local:
 	$ Consider we have a web application and each user has a separate thread
 	$ 3 users will be hitting the web app and in the code 3 threads will be getting created and each thread is attached with their user id
 	$ using shared objects may lead to synchronization errors so we can use Thread local in this case
-	$ Threads can use ThreadLocal class to use to store their local copies of variables.
-	Example : Thread1 can store User1 in threadlocal and it can also get user1 from thread1.Thread1 is visible only to thread1 not to thread2 or thread3.It's a thread safe environment.
+	Example : Thread1 can store User1 in threadlocal and it can also get user1 from thread1.User1 is visible only to thread1 not to thread2 or thread3.It's a thread safe environment.
 	$ ThreadLocal class helps in creating variables that can be only read and written by the same thread.
 	$ These variables are unique to each thread and are not shared among different threads.
 	$ Handy in scenarios where we need to maintain per thread context or state, such as application handling user sessions or DB connections

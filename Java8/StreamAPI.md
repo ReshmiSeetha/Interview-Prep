@@ -25,6 +25,4 @@ filter()
     It takes an object of Predicate. Predicate is an functional Interface it has a method called test it
     returns true or false.
 
-
-Method Reference
     
