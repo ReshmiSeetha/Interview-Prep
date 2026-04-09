@@ -1,10 +1,11 @@
-import java.net.http.HttpClient;
+
+//import java.net.http.HttpClient;
 import java.util.List;
 import java.util.ArrayList;
 
 public class PlatformThreadsExample {
 
-    private static HttpClient httpClient = HttpClient.newHttpClient();
+    // private static HttpClient httpClient = HttpClient.newHttpClient();
 
     public static void main(String[] args) throws InterruptedException {
         // To check after how many number of thread creation the platform thread will
