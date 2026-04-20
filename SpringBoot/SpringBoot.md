@@ -4,6 +4,12 @@ Spring Boot
 Why Spring Boot over Spring
     Spring Boot reduces configuration effort compared to traditional Spring by providing auto-configuration and starter dependencies. It also comes with embedded servers, so we don’t need to deploy WAR files externally.
 
+Dependency Injection
+    Dependency Injection is a design pattern where the responsibility of creating and managing object dependencies is transferred from the class itself to an external container (like Spring). This helps in loose coupling, better testability, and easier maintenance
+
+IOC Container
+    The IoC (Inversion of Control) Container is a core part of the Spring Framework that is responsible for creating, managing, and injecting objects (beans) and their dependencies throughout the application
+
 What is Auto Configuration?
     Auto-configuration automatically configures beans based on the dependencies present in the classpath. For example, if Spring Boot detects a database dependency, it automatically configures a DataSource.
 
@@ -26,11 +32,6 @@ It is the main entry point of a Spring Boot application.
 What is RestController?
     @RestController is used to create RESTful web services. It combines @Controller and @ResponseBody, so the response is directly returned as JSON.
 
-What is Dependency Injection?
-    Dependency Injection is a design pattern where objects are created and managed by the Spring container instead of manually instantiating them, promoting loose coupling.
-
-What is IOC Container?
-    IOC Container is the core of Spring that manages the lifecycle of beans and injects dependencies into them.
 
 What is @Autowired
     @Autowired is used to inject dependencies into a bean. It can be used with constructors, setters, or fields.
