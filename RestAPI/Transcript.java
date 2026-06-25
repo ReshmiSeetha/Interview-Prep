@@ -1,15 +1,14 @@
-package com.restApi;
+package RestAPI;
 
 import java.util.List;
 
 public class Transcript {
-	
+
 	private String audio_url;
 	private List<String> speech_models;
 	private String id;
 	private String status;
 	private String text;
-	
 
 	public String getAudio_url() {
 		return audio_url;
