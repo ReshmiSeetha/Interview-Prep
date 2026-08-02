@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -46,6 +46,30 @@
       box-shadow:var(--shadow);
       position:relative;
       overflow:hidden;
+    }
+
+    .top-nav{
+      margin-bottom:14px;
+      display:flex;
+      justify-content:flex-start;
+    }
+
+    .home-btn{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      text-decoration:none;
+      font-size:13px;
+      font-weight:600;
+      transition:background .2s ease, transform .2s ease;
+    }
+
+    .home-btn:hover{
+      background:rgba(71,215,255,.16);
+      transform:translateY(-1px);
     }
 
     .hero:before{
@@ -222,6 +246,9 @@
 </head>
 <body>
   <div class="poster">
+    <div class="top-nav">
+      <a class="home-btn" href="../../index.html">Home</a>
+    </div>
     <section class="hero">
       <div class="kicker">DSA Interview Cheat Sheet</div>
       <h1>Sliding Window</h1>
