@@ -1,0 +1,347 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sliding Window Cheat Sheet</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0b1728;
+      --card:#0f1d33cc;
+      --card2:#12233d;
+      --text:#edf4ff;
+      --muted:#9fb2cc;
+      --line:rgba(160,185,220,.16);
+      --cyan:#47d7ff;
+      --blue:#6ea8ff;
+      --green:#52e0b2;
+      --yellow:#ffd166;
+      --red:#ff7a90;
+      --shadow:0 18px 45px rgba(0,0,0,.32);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(71,215,255,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(82,224,178,.11), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color:var(--text);
+    }
+
+    .poster{
+      width:1200px;
+      margin:0 auto;
+      padding:28px;
+    }
+
+    .hero{
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:26px 28px;
+      background:linear-gradient(135deg, rgba(18,35,61,.92), rgba(7,17,31,.78));
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-40% -10% auto auto;
+      width:360px;
+      height:360px;
+      background:radial-gradient(circle, rgba(82,224,178,.16), transparent 60%);
+      filter:blur(8px);
+      pointer-events:none;
+    }
+
+    .kicker{
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--green);
+      margin-bottom:10px;
+      font-weight:700;
+    }
+
+    h1{
+      margin:0;
+      font-size:46px;
+      line-height:.98;
+      letter-spacing:-.05em;
+      font-weight:900;
+    }
+
+    .sub{
+      margin:10px 0 0;
+      max-width:900px;
+      font-size:16px;
+      line-height:1.45;
+      color:var(--muted);
+    }
+
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .pill{
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      font-size:13px;
+      color:var(--text);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(18,35,61,.92), rgba(10,20,37,.9));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      box-shadow:var(--shadow);
+    }
+
+    .span-4{grid-column:span 4}
+    .span-6{grid-column:span 6}
+    .span-8{grid-column:span 8}
+    .span-12{grid-column:span 12}
+
+    .title{
+      margin:0 0 10px;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--cyan);
+      box-shadow:0 0 0 4px rgba(71,215,255,.14);
+      flex:0 0 auto;
+    }
+
+    .dot.green{background:var(--green); box-shadow:0 0 0 4px rgba(82,224,178,.14)}
+    .dot.yellow{background:var(--yellow); box-shadow:0 0 0 4px rgba(255,209,102,.16)}
+    .dot.red{background:var(--red); box-shadow:0 0 0 4px rgba(255,122,144,.16)}
+    .dot.blue{background:var(--blue); box-shadow:0 0 0 4px rgba(110,168,255,.15)}
+
+    ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--text);
+    }
+
+    li{
+      margin:6px 0;
+      line-height:1.35;
+      color:#e7f0ff;
+      font-size:14px;
+    }
+
+    .muted{color:var(--muted)}
+    .accent{color:var(--cyan)}
+    .good{color:var(--green)}
+    .warn{color:var(--yellow)}
+    .bad{color:var(--red)}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+    }
+
+    .mini{
+      padding:12px 13px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .flow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      font-size:14px;
+    }
+
+    .step{
+      padding:10px 13px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      white-space:nowrap;
+    }
+
+    .arrow{color:var(--green); font-weight:800}
+
+    pre{
+      margin:0;
+      padding:14px;
+      border-radius:16px;
+      background:#06101d;
+      border:1px solid rgba(160,185,220,.14);
+      color:#d9e9ff;
+      font-size:13px;
+      line-height:1.45;
+      overflow:auto;
+    }
+
+    .footer{
+      margin-top:14px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="poster">
+    <section class="hero">
+      <div class="kicker">DSA Interview Cheat Sheet</div>
+      <h1>Sliding Window</h1>
+      <p class="sub">
+        Use when you need a contiguous subarray or substring and want to avoid recomputing from scratch.
+        Keep a moving window, expand and shrink based on constraints.
+      </p>
+      <div class="stats">
+        <span class="pill">Time: O(n)</span>
+        <span class="pill">Space: O(1) / O(k)</span>
+        <span class="pill">Contiguous range</span>
+        <span class="pill">Expand + shrink</span>
+        <span class="pill">Two pointers</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-4">
+        <h2 class="title"><span class="dot"></span>What it is</h2>
+        <ul>
+          <li>A technique for subarrays / substrings.</li>
+          <li>Maintain a window with two pointers.</li>
+          <li>Update state incrementally instead of recomputing.</li>
+        </ul>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot green"></span>Core idea</h2>
+        <div class="flow">
+          <span class="step">Expand right</span>
+          <span class="arrow">→</span>
+          <span class="step">Check constraint</span>
+          <span class="arrow">→</span>
+          <span class="step">Shrink left</span>
+          <span class="arrow">→</span>
+          <span class="step">Record answer</span>
+        </div>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot yellow"></span>Use it for</h2>
+        <ul>
+          <li>Longest / shortest subarray or substring</li>
+          <li>At most K distinct</li>
+          <li>Sum / average / frequency constraints</li>
+          <li>Fixed-size window problems</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot blue"></span>Types</h2>
+        <div class="mini-grid">
+          <div class="mini"><span class="good">Fixed window</span><br><span class="muted">Window size stays constant</span></div>
+          <div class="mini"><span class="good">Variable window</span><br><span class="muted">Grow/shrink based on condition</span></div>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot red"></span>State to track</h2>
+        <ul>
+          <li>Counts / frequency map</li>
+          <li>Running sum</li>
+          <li>Number of distinct elements</li>
+          <li>Maximum / minimum in window</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot"></span>Common problems</h2>
+        <ul>
+          <li>Maximum sum subarray of size K</li>
+          <li>Longest substring without repeating characters</li>
+          <li>Longest substring with at most K distinct characters</li>
+          <li>Minimum window substring</li>
+          <li>Subarray Product Less Than K</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot green"></span>Java essentials</h2>
+        <pre>int left = 0;
+for (int right = 0; right < n; right++) {
+    // add nums[right]
+    while (invalid) {
+        // remove nums[left]
+        left++;
+    }
+    // update answer
+}</pre>
+      </div>
+
+      <div class="card span-8">
+        <h2 class="title"><span class="dot blue"></span>When to recognize it</h2>
+        <ul>
+          <li>Problem mentions contiguous subarray or substring.</li>
+          <li>Brute force repeats work for overlapping ranges.</li>
+          <li>You can maintain the answer by adding/removing one element.</li>
+          <li>Constraints ask for O(n) or better.</li>
+        </ul>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot yellow"></span>Pitfalls</h2>
+        <ul>
+          <li>Forgetting to shrink until valid.</li>
+          <li>Mixing fixed and variable window logic.</li>
+          <li>Not updating counts when moving left.</li>
+          <li>Assuming it works for non-contiguous subsequences.</li>
+        </ul>
+      </div>
+
+      <div class="card span-12">
+        <h2 class="title"><span class="dot red"></span>Quick rule</h2>
+        <pre>If the problem asks about a contiguous range and
+you can update the answer by adding/removing one element,
+think Sliding Window.</pre>
+      </div>
+    </section>
+
+    <div class="footer">Compact, premium, infographic-ready layout for interview prep.</div>
+  </div>
+</body>
+</html>

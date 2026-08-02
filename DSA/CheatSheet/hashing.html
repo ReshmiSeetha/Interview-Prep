@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hashing & Hash Tables Cheat Sheet</title>
+  <style>
+    :root{
+      --bg:#07111f;
+      --bg2:#0b1728;
+      --card:#0f1d33cc;
+      --card2:#12233d;
+      --text:#edf4ff;
+      --muted:#9fb2cc;
+      --line:rgba(160,185,220,.16);
+      --cyan:#47d7ff;
+      --blue:#6ea8ff;
+      --green:#52e0b2;
+      --yellow:#ffd166;
+      --red:#ff7a90;
+      --shadow:0 18px 45px rgba(0,0,0,.32);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(71,215,255,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(82,224,178,.11), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      color:var(--text);
+    }
+
+    .poster{
+      width:1200px;
+      margin:0 auto;
+      padding:28px;
+    }
+
+    .hero{
+      border:1px solid var(--line);
+      border-radius:28px;
+      padding:26px 28px;
+      background:linear-gradient(135deg, rgba(18,35,61,.92), rgba(7,17,31,.78));
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-40% -10% auto auto;
+      width:360px;
+      height:360px;
+      background:radial-gradient(circle, rgba(71,215,255,.16), transparent 60%);
+      filter:blur(8px);
+      pointer-events:none;
+    }
+
+    .kicker{
+      display:inline-block;
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--cyan);
+      margin-bottom:10px;
+      font-weight:700;
+    }
+
+    h1{
+      margin:0;
+      font-size:46px;
+      line-height:.98;
+      letter-spacing:-.05em;
+      font-weight:900;
+    }
+
+    .sub{
+      margin:10px 0 0;
+      max-width:900px;
+      font-size:16px;
+      line-height:1.45;
+      color:var(--muted);
+    }
+
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .pill{
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      font-size:13px;
+      color:var(--text);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(18,35,61,.92), rgba(10,20,37,.9));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px 18px 16px;
+      box-shadow:var(--shadow);
+    }
+
+    .span-4{grid-column:span 4}
+    .span-6{grid-column:span 6}
+    .span-8{grid-column:span 8}
+    .span-12{grid-column:span 12}
+
+    .title{
+      margin:0 0 10px;
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--cyan);
+      box-shadow:0 0 0 4px rgba(71,215,255,.14);
+      flex:0 0 auto;
+    }
+
+    .dot.green{background:var(--green); box-shadow:0 0 0 4px rgba(82,224,178,.14)}
+    .dot.yellow{background:var(--yellow); box-shadow:0 0 0 4px rgba(255,209,102,.16)}
+    .dot.red{background:var(--red); box-shadow:0 0 0 4px rgba(255,122,144,.16)}
+    .dot.blue{background:var(--blue); box-shadow:0 0 0 4px rgba(110,168,255,.15)}
+
+    ul{
+      margin:0;
+      padding-left:18px;
+      color:var(--text);
+    }
+
+    li{
+      margin:6px 0;
+      line-height:1.35;
+      color:#e7f0ff;
+      font-size:14px;
+    }
+
+    .muted{color:var(--muted)}
+    .accent{color:var(--cyan)}
+    .good{color:var(--green)}
+    .warn{color:var(--yellow)}
+    .bad{color:var(--red)}
+
+    .mini-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+    }
+
+    .mini{
+      padding:12px 13px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    .flow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+      font-size:14px;
+    }
+
+    .step{
+      padding:10px 13px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      white-space:nowrap;
+    }
+
+    .arrow{color:var(--cyan); font-weight:800}
+
+    pre{
+      margin:0;
+      padding:14px;
+      border-radius:16px;
+      background:#06101d;
+      border:1px solid rgba(160,185,220,.14);
+      color:#d9e9ff;
+      font-size:13px;
+      line-height:1.45;
+      overflow:auto;
+    }
+
+    .footer{
+      margin-top:14px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="poster">
+    <section class="hero">
+      <div class="kicker">DSA Interview Cheat Sheet</div>
+      <h1>Hashing &amp; Hash Tables</h1>
+      <p class="sub">
+        Use hashing when you need fast lookup, duplicate detection, frequency counting, grouping, or complement search.
+        Think in keys, buckets, collisions, and O(1) average access.
+      </p>
+      <div class="stats">
+        <span class="pill">Insert O(1) avg</span>
+        <span class="pill">Search O(1) avg</span>
+        <span class="pill">Delete O(1) avg</span>
+        <span class="pill">Worst case O(n)</span>
+        <span class="pill">Space tradeoff</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card span-4">
+        <h2 class="title"><span class="dot"></span>What it is</h2>
+        <ul>
+          <li><span class="accent">Hashing</span> maps a key to an index.</li>
+          <li><span class="accent">Hash table</span> stores key-value pairs in buckets.</li>
+          <li>Goal: fast access with even distribution.</li>
+        </ul>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot green"></span>How it works</h2>
+        <div class="flow">
+          <span class="step">Key</span>
+          <span class="arrow">→</span>
+          <span class="step">Hash function</span>
+          <span class="arrow">→</span>
+          <span class="step">Bucket index</span>
+          <span class="arrow">→</span>
+          <span class="step">Collision handling</span>
+        </div>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot yellow"></span>Use it for</h2>
+        <ul>
+          <li>Duplicates / seen before</li>
+          <li>Frequency counting</li>
+          <li>Two Sum / complements</li>
+          <li>Grouping by signature</li>
+          <li>Prefix sum lookups</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot blue"></span>Map vs Set</h2>
+        <div class="mini-grid">
+          <div class="mini"><span class="good">HashMap</span><br><span class="muted">key → value, counts, indices, groups</span></div>
+          <div class="mini"><span class="good">HashSet</span><br><span class="muted">unique values, membership checks</span></div>
+        </div>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot red"></span>Collision handling</h2>
+        <ul>
+          <li><span class="good">Separate chaining</span>: list/tree inside bucket.</li>
+          <li><span class="good">Open addressing</span>: probe for next slot.</li>
+          <li>Linear probing, quadratic probing, double hashing.</li>
+          <li>Rehash when load factor gets too high.</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot"></span>Common interview patterns</h2>
+        <ul>
+          <li>Two Sum</li>
+          <li>Valid Anagram</li>
+          <li>Group Anagrams</li>
+          <li>Contains Duplicate</li>
+          <li>Subarray Sum Equals K</li>
+          <li>Longest Consecutive Sequence</li>
+          <li>Valid Sudoku</li>
+        </ul>
+      </div>
+
+      <div class="card span-6">
+        <h2 class="title"><span class="dot green"></span>Java essentials</h2>
+        <pre>Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+
+map.put(key, value);
+map.getOrDefault(key, 0);
+map.containsKey(key);
+
+set.add(x);
+set.contains(x);
+set.remove(x);</pre>
+      </div>
+
+      <div class="card span-8">
+        <h2 class="title"><span class="dot blue"></span>When not to use hashing</h2>
+        <ul>
+          <li>Need sorted order or traversal by order.</li>
+          <li>Need range queries like min/max in interval.</li>
+          <li>Need predecessor / successor queries.</li>
+          <li>Need deterministic ordering by key.</li>
+        </ul>
+      </div>
+
+      <div class="card span-4">
+        <h2 class="title"><span class="dot yellow"></span>Pitfalls</h2>
+        <ul>
+          <li>Bad hash distribution.</li>
+          <li>Too many collisions.</li>
+          <li>Mutable keys.</li>
+          <li>Assuming O(1) worst case.</li>
+        </ul>
+      </div>
+
+      <div class="card span-12">
+        <h2 class="title"><span class="dot green"></span>Quick mental rule</h2>
+        <pre>Need fast lookup / counting / grouping?
+→ Use HashMap or HashSet.
+
+Need sorted order / range queries?
+→ Use tree / ordered structure instead.</pre>
+      </div>
+    </section>
+
+    <div class="footer">Compact, premium, infographic-ready layout for DSA interview notes.</div>
+  </div>
+</body>
+</html>
